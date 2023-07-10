@@ -46,26 +46,6 @@ def getstatus(cmd):
     status, output = getstatusoutput(cmd)
     return status
 
-def which(name, flags=os.X_OK):
-    """ which that works on Windows too.
-    
-    Based on http://twistedmatrix.com/trac/browser/tags/releases/twisted-8.2.0/twisted/python/procutils.py
-    """
-    result = []
-    exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
-    path = os.environ.get('PATH', None)
-    if path is None:
-        return []
-    for p in os.environ.get('PATH', '').split(os.pathsep):
-        p = os.path.join(p, name)
-        if os.access(p, flags):
-            result.append(p)
-        for e in exts:
-            pext = p + e
-            if os.access(pext, flags):
-                result.append(pext)
-    return result
-
 # could allow this to be passed in:
 repo_dir = os.getcwd()
 
@@ -135,12 +115,10 @@ if len(sys.argv) == 2 and sys.argv[1] == "-c":
 
 # See if we should call "node" or "nodejs":
 
-if which("nodejs") != []:
+if shutil.which("nodejs"):
     node = "nodejs"
-elif which("node") != []:
+elif shutil.which("node"):
     node = "node"
-elif getstatus("[ -e /home/svgwg/bin/node ]") == 0:
-    node = "/home/svgwg/bin/node"
 else:
     exit(1, 'FAIL: could not find "nodejs" or "node" on the PATH')
   
